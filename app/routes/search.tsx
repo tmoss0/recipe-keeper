@@ -31,7 +31,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       region: meal.strArea,
     };
 
-    // Find all elements the contain 'strIngredient' and add them to the ingredients array
     const ingredients: Ingredient[] = [];
     for (const [key, value] of Object.entries(meal)) {
       if (key.includes('strIngredient') && value) {
