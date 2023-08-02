@@ -1,18 +1,8 @@
 import { Form, useLoaderData } from '@remix-run/react';
 import type { LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
-
-type Ingredient = {
-  name: string;
-};
-
-type Recipe = {
-  id: number;
-  title: string;
-  instructions: string;
-  category: string;
-  region: string;
-};
+import type { Ingredient } from '~/types/ingredient';
+import type { Recipe } from '~/types/recipe';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
@@ -31,6 +21,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       region: meal.strArea,
     };
 
+    // Find all elements the contain 'strIngredient' and add them to the ingredients array
     const ingredients: Ingredient[] = [];
     for (const [key, value] of Object.entries(meal)) {
       if (key.includes('strIngredient') && value) {
