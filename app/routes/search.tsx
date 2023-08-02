@@ -1,8 +1,19 @@
 import { Form, useLoaderData } from '@remix-run/react';
 import type { LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import type { Ingredient } from '~/types/ingredient';
-import type { Recipe } from '~/types/recipe';
+
+type Ingredient = {
+  name: string;
+};
+
+type Recipe = {
+  id: number;
+  title: string;
+  instructions: string;
+  ingredients: Ingredient[];
+  category: string;
+  region: string;
+};
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
@@ -13,21 +24,26 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   if (data.meals && data.meals.length > 0) {
     const meal = data.meals[0];
+    const ingredients: Ingredient[] = [];
+    const ingredientKeys = Object.keys(meal).filter((key) =>
+      key.startsWith('strIngredient')
+    );
+    ingredientKeys.forEach((key) => {
+      const ingredient = meal[key];
+      if (ingredient) {
+        ingredients.push({ name: ingredient });
+      }
+    });
+
     const recipe: Recipe = {
       id: parseInt(meal.idMeal),
       title: meal.strMeal,
       instructions: meal.strInstructions,
+      ingredients: ingredients,
       category: meal.strCategory,
       region: meal.strArea,
     };
 
-    // Find all elements the contain 'strIngredient' and add them to the ingredients array
-    const ingredients: Ingredient[] = [];
-    for (const [key, value] of Object.entries(meal)) {
-      if (key.includes('strIngredient') && value) {
-        ingredients.push(value);
-      }
-    }
 
     return json({ ...recipe, ingredients });
   } else {
@@ -37,6 +53,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Search() {
   const data = useLoaderData<Recipe>();
+  console.log('Data: ', data);
   const instructionSteps = data.instructions.replace(/(\d+)/g, '$1.');
   const instructions = instructionSteps.split('\r\n\r\n');
 
@@ -53,12 +70,12 @@ export default function Search() {
             <h3 className='text-2xl'>Ingredients: </h3>
             <ul>
               {data.ingredients.map((ingredient, index) => (
-                <li key={index}>{ingredient}</li>
+                <li key={index}>{ingredient.name}</li>
               ))}
             </ul>
             <h3 className='text-2xl'>Instructions: </h3>
             <ol>
-              {instructions.map((instruction, index) => (
+              {instructions.map((instruction: string, index: number) => (
                 <li key={index}>{instruction}</li>
               ))}
             </ol>
