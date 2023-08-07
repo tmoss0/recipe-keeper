@@ -60,8 +60,8 @@ export default function Search() {
   return (
     <div className='flex flex-col gap-6'>
       <Form>
-        <input type='text' name='query' placeholder='Search Recipe' />
-        <button type='submit'>Search</button>
+        <input type='text' name='query' placeholder='Search Recipe' className='border-2 p-1' />
+        <button type='submit' className='ml-4 p-1 border-2'>Search</button>
       </Form>
       {data ? (
         <div>
