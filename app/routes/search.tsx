@@ -17,7 +17,7 @@ type Recipe = {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
-  const query = url.searchParams.get('query');
+  const query = url.searchParams.get('query') || 'pizza';
   const requestURL = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
   const response = await fetch(requestURL);
   const data = await response.json();
